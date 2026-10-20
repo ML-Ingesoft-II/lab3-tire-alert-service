@@ -1,16 +1,20 @@
-# tire_alert_service – Lab 3: del sector profesional al código
+# Laboratorio: del sector profesional al código
 
-Ingeniería de Software II – Universidad Nacional de Colombia, 2026-2.
-Integrantes: Deivid Farid Ardila Herrera, Ángel David Beltrán García, Oscar Iván Ulises Gutiérrez Palacios, Juan Camilo Vergara Tao.
+*Ingeniería de Software II – Universidad Nacional de Colombia, 2026-2.*
 
-Componente `tire_alert_service` del sistema **Tire** (detección de fatiga y microsueño en conductores).
-Recibe las alertas de fatiga que la alarma de cabina no logró resolver y decide a quién escalar
-según el perfil del conductor (RF08), registrando cada incidente (AC06).
+## Integrantes
 
-- **Lenguaje:** TypeScript (Node.js 22 o superior).
-- **Pruebas:** Vitest.
-- **Sub-arquitectura:** hexagonal (puertos y adaptadores). La estructura de carpetas la refleja.
-- Sin base de datos ni servicios reales: repositorio en memoria y clientes externos simulados.
+- Deivid Farid Ardila Herrera - [deardilah@unal.edu.co](mailto:deardilah@unal.edu.co)
+- Ángel David Beltrán García - [anbeltrang@unal.edu.co](mailto:anbeltrang@unal.edu.co)
+- Oscar Iván Ulises Gutiérrez Palacios - [osgutierrezp@unal.edu.co](mailto:osgutierrezp@unal.edu.co)
+- Juan Camilo Vergara Tao - [juvergarat@unal.edu.co](mailto:juvergarat@unal.edu.co)
+
+> [!IMPORTANT]
+> El informe completo del laboratorio se encuentra disponible [aquí](URL).
+
+Este repositorio contiene `tire_alert_service`, el componente del sistema **Tire** (detección de fatiga y microsueño en conductores) que se encarga de las alertas que la alarma de cabina no logró resolver. Según el perfil del conductor, decide a quién escalar cada alerta (RF08) y deja registrado el incidente (AC06).
+
+Está escrito en TypeScript sobre Node.js 22 o superior, con pruebas unitarias en Vitest. Sigue una sub-arquitectura hexagonal (puertos y adaptadores), y la estructura de carpetas lo refleja. Como el laboratorio no exige infraestructura real, el repositorio de incidentes vive en memoria y los servicios externos (perfiles, FCM y SMS) están simulados.
 
 ## Cómo ejecutar
 
