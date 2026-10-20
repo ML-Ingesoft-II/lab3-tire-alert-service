@@ -1,0 +1,28 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam linetype ortho
+skinparam stereotypeCBackgroundColor #FFE8B0
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor #888888
+hide empty members
+hide circle
+class ServicioEscalamiento <<Context>> {
+  - politica: PoliticaEscalamiento
+  + procesar(alerta)
+}
+interface PoliticaEscalamiento <<Strategy>> {
+  + decidirAcciones(incidente, contexto)
+}
+class PoliticaParticularSolo <<ConcreteStrategy>>
+class PoliticaParticularConCopiloto <<ConcreteStrategy>>
+class PoliticaFlota <<ConcreteStrategy>>
+ServicioEscalamiento -right-> PoliticaEscalamiento
+PoliticaEscalamiento <|.. PoliticaParticularSolo
+PoliticaEscalamiento <|.. PoliticaParticularConCopiloto
+PoliticaEscalamiento <|.. PoliticaFlota
+note bottom of PoliticaParticularSolo : SMS a los contactos\nde emergencia.
+note bottom of PoliticaParticularConCopiloto : Notificación push\nal copiloto.
+note bottom of PoliticaFlota : Alerta en el dashboard\ndel despachador.
+@enduml

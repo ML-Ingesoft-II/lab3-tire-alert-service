@@ -1,0 +1,128 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 50
+hide empty members
+
+package "adaptadores.entrada" {
+  class ControladorAlertasRest {
+    + recibirAlerta(json)
+  }
+}
+
+package "aplicacion" {
+  interface ProcesarAlerta <<puerto de entrada>> {
+    + procesar(alerta: AlertaFatiga)
+  }
+  class ServicioEscalamiento {
+    - perfiles: ConsultorPerfil
+    - repositorio: RepositorioIncidentes
+    - push: NotificadorPush
+    - sms: NotificadorSms
+    - dashboard: NotificadorDashboard
+    - reglas: ReglasEscalamiento
+    + procesar(alerta: AlertaFatiga)
+  }
+}
+
+package "dominio" {
+  class AlertaFatiga {
+    + conductorId
+    + tipo
+    + silenciada: boolean
+    + ubicacion
+    + ocurridaEn
+  }
+  class Incidente {
+    - conductorId
+    - tipo
+    - ubicacion
+    - ocurridoEn
+    - silenciado: boolean
+    - nivel: NivelRiesgo
+    - acciones: List<AccionEscalamiento>
+    + registrarAccion(accion)
+  }
+  enum NivelRiesgo {
+    NORMAL
+    PRECAUCION
+    CRITICO
+  }
+  class ContextoConductor {
+    + tipoPerfil
+    + copilotoId
+    + contactosEmergencia
+    + flotaId
+  }
+  class AccionEscalamiento {
+    + canal
+    + destinatario
+    + mensaje
+  }
+  class ReglasEscalamiento {
+    - ventanaMinutos
+    - umbralRepeticiones
+    + debeEscalar(incidente, recientes): boolean
+    + decidirAcciones(incidente, contexto): List<AccionEscalamiento>
+  }
+}
+
+package "aplicacion.puertos.salida" {
+  interface ConsultorPerfil {
+    + obtenerContexto(conductorId): ContextoConductor
+  }
+  interface RepositorioIncidentes {
+    + guardar(incidente)
+    + contarRecientes(conductorId, desde): int
+  }
+  interface NotificadorPush {
+    + enviar(accion)
+  }
+  interface NotificadorSms {
+    + enviar(accion)
+  }
+  interface NotificadorDashboard {
+    + enviar(accion)
+  }
+}
+
+package "adaptadores.salida" {
+  class ConsultorPerfilSimulado
+  class RepositorioIncidentesEnMemoria
+  class NotificadorPushFcmSimulado
+  class NotificadorSmsSimulado
+  class NotificadorDashboardSimulado
+}
+
+class ConfiguracionAlertService {
+  + crearServicio(): ServicioEscalamiento
+}
+
+ControladorAlertasRest --> ProcesarAlerta
+ProcesarAlerta <|.. ServicioEscalamiento
+ConfiguracionAlertService ..> ServicioEscalamiento
+
+ServicioEscalamiento --> ReglasEscalamiento
+ServicioEscalamiento ..> Incidente
+ServicioEscalamiento ..> AlertaFatiga
+Incidente --> NivelRiesgo
+Incidente *-- AccionEscalamiento
+ReglasEscalamiento ..> ContextoConductor
+ReglasEscalamiento ..> AccionEscalamiento
+
+ServicioEscalamiento --> ConsultorPerfil
+ServicioEscalamiento --> RepositorioIncidentes
+ServicioEscalamiento --> NotificadorPush
+ServicioEscalamiento --> NotificadorSms
+ServicioEscalamiento --> NotificadorDashboard
+
+ConsultorPerfil <|.. ConsultorPerfilSimulado
+RepositorioIncidentes <|.. RepositorioIncidentesEnMemoria
+NotificadorPush <|.. NotificadorPushFcmSimulado
+NotificadorSms <|.. NotificadorSmsSimulado
+NotificadorDashboard <|.. NotificadorDashboardSimulado
+@enduml

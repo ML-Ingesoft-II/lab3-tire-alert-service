@@ -1,0 +1,34 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam linetype ortho
+skinparam stereotypeCBackgroundColor #FFE8B0
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor #888888
+hide empty members
+hide circle
+class Incidente <<Context>> {
+  - estado: EstadoIncidente
+  + registrarRepeticion()
+  + escalar(acciones)
+  + atender()
+  + nivel(): NivelRiesgo
+}
+interface EstadoIncidente <<State>> {
+  + registrarRepeticion(incidente)
+  + escalar(incidente)
+  + atender(incidente)
+  + nivel(): NivelRiesgo
+}
+class EstadoDetectado <<ConcreteState>>
+class EstadoEscalado <<ConcreteState>>
+class EstadoAtendido <<ConcreteState>>
+Incidente -right-> EstadoIncidente
+EstadoIncidente <|.. EstadoDetectado
+EstadoIncidente <|.. EstadoEscalado
+EstadoIncidente <|.. EstadoAtendido
+note bottom of EstadoDetectado : Nivel: precaución.\nPuede escalar.
+note bottom of EstadoEscalado : Nivel: crítico.\nSolo registra repeticiones.
+note bottom of EstadoAtendido : Nivel: normal.\nNo vuelve a notificar.
+@enduml

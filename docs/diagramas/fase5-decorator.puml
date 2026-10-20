@@ -1,0 +1,31 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam linetype polyline
+skinparam nodesep 25
+skinparam stereotypeCBackgroundColor #FFE8B0
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor #888888
+hide empty members
+hide circle
+class ServicioEscalamiento <<Client>>
+interface Notificador <<Component>> {
+  + enviar(accion)
+}
+class NotificadorPushFcmSimulado <<ConcreteComponent>>
+class NotificadorSmsSimulado <<ConcreteComponent>>
+class NotificadorDashboardSimulado <<ConcreteComponent>>
+class NotificadorConReintento <<Decorator>> {
+  - envuelto: Notificador
+  - intentos: int
+  + enviar(accion)
+}
+ServicioEscalamiento -right-> Notificador
+Notificador <|.. NotificadorPushFcmSimulado
+Notificador <|.. NotificadorSmsSimulado
+Notificador <|.. NotificadorDashboardSimulado
+Notificador <|.. NotificadorConReintento
+NotificadorConReintento o--> Notificador
+note bottom of NotificadorConReintento : Repite el envío si falla,\nhasta el número de intentos.
+@enduml

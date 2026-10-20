@@ -1,0 +1,32 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam linetype ortho
+skinparam stereotypeCBackgroundColor #FFE8B0
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor #888888
+hide empty members
+hide circle
+class ServicioEscalamiento <<Client>> {
+  + procesar(alerta)
+}
+class IncidenteBuilder <<Builder>> {
+  + paraConductor(id)
+  + deTipo(tipo)
+  + enUbicacion(ubicacion)
+  + ocurridoEn(fecha)
+  + silenciado(valor)
+  + construir(): Incidente
+}
+class Incidente <<Product>> {
+  - conductorId
+  - tipo
+  - ubicacion
+  - ocurridoEn
+  - silenciado
+}
+ServicioEscalamiento -right-> IncidenteBuilder
+IncidenteBuilder -right-> Incidente
+note bottom of IncidenteBuilder : Verifica los datos obligatorios\nantes de crear el incidente.
+@enduml

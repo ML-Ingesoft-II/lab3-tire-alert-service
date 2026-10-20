@@ -1,0 +1,101 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam linetype ortho
+skinparam nodesep 35
+skinparam ranksep 60
+skinparam stereotypeCBackgroundColor #FFE8B0
+hide empty members
+hide circle
+left to right direction
+
+package "Entrada" {
+  class ControladorAlertasRest
+  interface ProcesarAlerta
+}
+
+package "Aplicación" {
+  class ServicioEscalamiento {
+    + procesar(alerta)
+  }
+  class FabricaPoliticas <<Factory Method>> {
+    + crearPara(contexto)
+  }
+}
+
+package "Dominio" {
+  together {
+    class IncidenteBuilder <<Builder>>
+    class Incidente
+  }
+  together {
+    interface EstadoIncidente <<State>>
+    class EstadoDetectado
+    class EstadoEscalado
+    class EstadoAtendido
+  }
+  together {
+    interface PoliticaEscalamiento <<Strategy>> {
+      + decidirAcciones(incidente, contexto)
+    }
+    class PoliticaParticularSolo
+    class PoliticaParticularConCopiloto
+    class PoliticaFlota
+  }
+  class ReglasEscalamiento {
+    + debeEscalar(incidente, recientes)
+  }
+}
+
+package "Puertos de salida" {
+  interface ConsultorPerfil
+  interface RepositorioIncidentes
+  interface Notificador {
+    + enviar(accion)
+  }
+}
+
+package "Adaptadores de salida" {
+  class ConsultorPerfilSimulado
+  class RepositorioIncidentesEnMemoria
+  class NotificadorConReintento <<Decorator>>
+  class NotificadorPushFcmSimulado <<Adapter>>
+  class NotificadorSmsSimulado <<Adapter>>
+  class NotificadorDashboardSimulado
+  class ClienteFcmFalso
+  class ProveedorSmsFalso
+}
+
+ControladorAlertasRest --> ProcesarAlerta
+ProcesarAlerta <|.. ServicioEscalamiento
+
+ServicioEscalamiento --> FabricaPoliticas
+ServicioEscalamiento --> ReglasEscalamiento
+ServicioEscalamiento ..> IncidenteBuilder
+ServicioEscalamiento --> ConsultorPerfil
+ServicioEscalamiento --> RepositorioIncidentes
+ServicioEscalamiento --> Notificador
+
+FabricaPoliticas ..> PoliticaEscalamiento
+PoliticaEscalamiento <|.. PoliticaParticularSolo
+PoliticaEscalamiento <|.. PoliticaParticularConCopiloto
+PoliticaEscalamiento <|.. PoliticaFlota
+
+IncidenteBuilder ..> Incidente
+Incidente --> EstadoIncidente
+EstadoIncidente <|.. EstadoDetectado
+EstadoIncidente <|.. EstadoEscalado
+EstadoIncidente <|.. EstadoAtendido
+
+ConsultorPerfil <|.. ConsultorPerfilSimulado
+RepositorioIncidentes <|.. RepositorioIncidentesEnMemoria
+Notificador <|.. NotificadorConReintento
+Notificador <|.. NotificadorPushFcmSimulado
+Notificador <|.. NotificadorSmsSimulado
+Notificador <|.. NotificadorDashboardSimulado
+NotificadorConReintento o--> Notificador
+NotificadorPushFcmSimulado --> ClienteFcmFalso
+NotificadorSmsSimulado --> ProveedorSmsFalso
+@enduml

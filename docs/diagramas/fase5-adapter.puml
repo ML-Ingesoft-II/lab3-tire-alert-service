@@ -1,0 +1,33 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam linetype ortho
+skinparam stereotypeCBackgroundColor #FFE8B0
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor #888888
+hide empty members
+hide circle
+class ServicioEscalamiento <<Client>>
+interface Notificador <<Target>> {
+  + enviar(accion)
+}
+class NotificadorPushFcmSimulado <<Adapter>> {
+  + enviar(accion)
+}
+class NotificadorSmsSimulado <<Adapter>> {
+  + enviar(accion)
+}
+class ClienteFcmFalso <<Adaptee>> {
+  + send(token, payload)
+}
+class ProveedorSmsFalso <<Adaptee>> {
+  + sendMessage(numero, texto)
+}
+ServicioEscalamiento -right-> Notificador
+Notificador <|.. NotificadorPushFcmSimulado
+Notificador <|.. NotificadorSmsSimulado
+NotificadorPushFcmSimulado --> ClienteFcmFalso
+NotificadorSmsSimulado --> ProveedorSmsFalso
+note right of Notificador : Cada adaptador traduce la\nacción al formato del proveedor.
+@enduml

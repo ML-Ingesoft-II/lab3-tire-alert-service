@@ -1,0 +1,30 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam linetype ortho
+skinparam stereotypeCBackgroundColor #FFE8B0
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor #888888
+hide empty members
+hide circle
+class ServicioEscalamiento <<Client>> {
+  + procesar(alerta)
+}
+class FabricaPoliticas <<Creator>> {
+  + crearPara(contexto): PoliticaEscalamiento
+}
+interface PoliticaEscalamiento <<Product>> {
+  + decidirAcciones(incidente, contexto)
+}
+class PoliticaParticularSolo <<ConcreteProduct>>
+class PoliticaParticularConCopiloto <<ConcreteProduct>>
+class PoliticaFlota <<ConcreteProduct>>
+ServicioEscalamiento -right-> FabricaPoliticas
+ServicioEscalamiento ..> PoliticaEscalamiento
+FabricaPoliticas ..> PoliticaEscalamiento
+PoliticaEscalamiento <|.. PoliticaParticularSolo
+PoliticaEscalamiento <|.. PoliticaParticularConCopiloto
+PoliticaEscalamiento <|.. PoliticaFlota
+note right of FabricaPoliticas : Elige la política según\nel perfil del conductor.
+@enduml
