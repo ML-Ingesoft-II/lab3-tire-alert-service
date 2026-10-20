@@ -1,28 +1,12 @@
-import type { AlertaFatiga, Canal } from '../dominio/tipos';
+import type { AccionEscalamiento, AlertaFatiga, Canal } from '../dominio/tipos';
 import type { ReglasEscalamiento } from '../dominio/ReglasEscalamiento';
 import type { ProcesarAlerta, ResultadoProceso } from './puertos/entrada/ProcesarAlerta';
 import type { ConsultorPerfil } from './puertos/salida/ConsultorPerfil';
 import type { RepositorioIncidentes } from './puertos/salida/RepositorioIncidentes';
 import type { Notificador } from './puertos/salida/Notificador';
 import type { FabricaPoliticas } from './FabricaPoliticas';
+import { IncidenteBuilder } from '../dominio/incidente/IncidenteBuilder';
 
-/**
- * PARTE 1 (núcleo). Caso de uso principal. PATRÓN STRATEGY: Context.
- * Solo depende de interfaces (inversión de dependencias): todo se recibe por el constructor.
- *
- * Flujo de procesar(alerta):
- *  1. Crear el Incidente con IncidenteBuilder (datos de la alerta).
- *  2. Contar incidentes recientes del conductor dentro de reglas.ventanaMinutos
- *     (antes de guardar: el conteo no incluye esta alerta). Si recientes > 0, incidente.registrarRepeticion().
- *  3. Si reglas.debeEscalar(...):
- *     a. obtener el contexto con perfiles.obtenerContexto(...)
- *     b. politica = fabrica.crearPara(contexto); acciones = politica.decidirAcciones(...)
- *     c. incidente.escalar(acciones) ANTES de enviar: el incidente queda crítico aunque un envío falle.
- *     d. enviar cada acción con notificadores.get(accion.canal); si no hay notificador para ese canal, lanzar un Error.
- *  4. Guardar el incidente en el repositorio SIEMPRE, aunque algo falle en el paso 3 (try/finally),
- *     porque cada incidente debe quedar registrado (AC06). El error, si lo hubo, se propaga.
- *  5. Devolver { escalado, nivel: incidente.nivel(), acciones } (acciones = [] si no se escaló).
- */
 export class ServicioEscalamiento implements ProcesarAlerta {
   constructor(
     private readonly perfiles: ConsultorPerfil,
@@ -33,6 +17,55 @@ export class ServicioEscalamiento implements ProcesarAlerta {
   ) {}
 
   async procesar(alerta: AlertaFatiga): Promise<ResultadoProceso> {
-    throw new Error('TODO PARTE 1: ServicioEscalamiento.procesar');
+    let builder = new IncidenteBuilder()
+      .paraConductor(alerta.conductorId)
+      .deTipo(alerta.tipo)
+      .ocurridoEn(alerta.ocurridaEn)
+      .silenciado(alerta.silenciada);
+
+    if (alerta.ubicacion) {
+      builder = builder.enUbicacion(alerta.ubicacion);
+    }
+
+    const incidente = builder.construir();
+
+    const cutoffDate = new Date(alerta.ocurridaEn.getTime() - this.reglas.ventanaMinutos * 60 * 1000);
+    const recentIncidentsCount = await this.repositorio.contarRecientes(alerta.conductorId, cutoffDate);
+
+    if (recentIncidentsCount > 0) {
+      incidente.registrarRepeticion();
+    }
+
+    const shouldEscalate = this.reglas.debeEscalar(incidente, recentIncidentsCount);
+    let actions: AccionEscalamiento[] = [];
+
+    try {
+      if (shouldEscalate) {
+        const context = await this.perfiles.obtenerContexto(alerta.conductorId);
+        const policy = this.fabrica.crearPara(context);
+        actions = policy.decidirAcciones(incidente, context);
+
+        // Transition incident state before sending to maintain critical state even on network failure
+        incidente.escalar(actions);
+
+        for (const action of actions) {
+          const notifier = this.notificadores.get(action.canal);
+          if (!notifier) {
+            throw new Error(`No notifier configured for channel: ${action.canal}`);
+          }
+          await notifier.enviar(action);
+        }
+      }
+    } finally {
+      // Always persist the incident to satisfy auditability and traceability requirements (AC06)
+      await this.repositorio.guardar(incidente);
+    }
+
+    return {
+      escalado: shouldEscalate,
+      nivel: incidente.nivel(),
+      acciones: actions,
+    };
   }
 }
+

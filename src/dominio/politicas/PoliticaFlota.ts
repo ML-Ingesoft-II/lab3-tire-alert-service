@@ -1,15 +1,25 @@
-import type { AccionEscalamiento, ContextoConductor } from '../tipos';
+import { Canal, type AccionEscalamiento, type ContextoConductor } from '../tipos';
 import type { Incidente } from '../incidente/Incidente';
 import type { PoliticaEscalamiento } from './PoliticaEscalamiento';
 
-/**
- * PARTE 1 (núcleo). PATRÓN STRATEGY: estrategia concreta.
- * Una acción Canal.DASHBOARD dirigida a contexto.flotaId (despachador de la flota).
- * El mensaje debe incluir el tipo de evento y, si existe, la ubicación.
- * Si el perfil no tiene a quién avisar (dato vacío o ausente), lanzar un Error.
- */
 export class PoliticaFlota implements PoliticaEscalamiento {
   decidirAcciones(incidente: Incidente, contexto: ContextoConductor): AccionEscalamiento[] {
-    throw new Error('TODO PARTE 1: PoliticaFlota.decidirAcciones');
+    if (!contexto.flotaId || contexto.flotaId.trim() === '') {
+      throw new Error('Fleet driver has no fleetId registered');
+    }
+
+    const locationInfo = incidente.ubicacion
+      ? ` at (${incidente.ubicacion.latitud}, ${incidente.ubicacion.longitud})`
+      : '';
+    const message = `Fatigue alert: ${incidente.tipo} detected for fleet ${contexto.flotaId}${locationInfo}`;
+
+    return [
+      {
+        canal: Canal.DASHBOARD,
+        destinatario: contexto.flotaId,
+        mensaje: message,
+      },
+    ];
   }
 }
+
