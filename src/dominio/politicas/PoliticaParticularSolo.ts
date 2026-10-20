@@ -5,19 +5,20 @@ import type { PoliticaEscalamiento } from './PoliticaEscalamiento';
 export class PoliticaParticularSolo implements PoliticaEscalamiento {
   decidirAcciones(incidente: Incidente, contexto: ContextoConductor): AccionEscalamiento[] {
     if (!contexto.contactosEmergencia || contexto.contactosEmergencia.length === 0) {
-      throw new Error('Solo driver has no emergency contacts registered');
+      throw new Error('El conductor particular no tiene contactos de emergencia registrados');
     }
 
-    const locationInfo = incidente.ubicacion
-      ? ` at (${incidente.ubicacion.latitud}, ${incidente.ubicacion.longitud})`
+    const textoUbicacion = incidente.ubicacion
+      ? ` en (${incidente.ubicacion.latitud}, ${incidente.ubicacion.longitud})`
       : '';
-    const message = `Fatigue alert: ${incidente.tipo} detected${locationInfo}`;
+    const mensaje = `Alerta de fatiga: ${incidente.tipo} detectado${textoUbicacion}`;
 
-    return contexto.contactosEmergencia.map((phoneNumber) => ({
+    return contexto.contactosEmergencia.map((telefono) => ({
       canal: Canal.SMS,
-      destinatario: phoneNumber,
-      mensaje: message,
+      destinatario: telefono,
+      mensaje,
     }));
   }
 }
+
 

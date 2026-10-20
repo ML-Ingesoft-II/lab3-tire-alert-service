@@ -13,36 +13,36 @@ import { IncidenteBuilder } from '../src/dominio/incidente/IncidenteBuilder';
 import type { Incidente } from '../src/dominio/incidente/Incidente';
 
 class ConsultorPerfilStub implements ConsultorPerfil {
-  constructor(private readonly profiles: Map<string, ContextoConductor>) {}
+  constructor(private readonly perfiles: Map<string, ContextoConductor>) {}
 
   async obtenerContexto(conductorId: string): Promise<ContextoConductor> {
-    const profile = this.profiles.get(conductorId);
-    if (!profile) {
-      throw new Error(`Profile not found for conductor: ${conductorId}`);
+    const perfil = this.perfiles.get(conductorId);
+    if (!perfil) {
+      throw new Error(`Perfil no encontrado para el conductor: ${conductorId}`);
     }
-    return profile;
+    return perfil;
   }
 }
 
 class RepositorioIncidentesSpy implements RepositorioIncidentes {
-  readonly saved: Incidente[] = [];
+  readonly guardados: Incidente[] = [];
 
-  constructor(private readonly recentCount: number = 0) {}
+  constructor(private readonly conteoRecientes: number = 0) {}
 
   async guardar(incidente: Incidente): Promise<void> {
-    this.saved.push(incidente);
+    this.guardados.push(incidente);
   }
 
   async contarRecientes(conductorId: string, desde: Date): Promise<number> {
-    return this.recentCount;
+    return this.conteoRecientes;
   }
 }
 
 class NotificadorSpy implements Notificador {
-  readonly sentActions: AccionEscalamiento[] = [];
+  readonly accionesEnviadas: AccionEscalamiento[] = [];
 
   async enviar(accion: AccionEscalamiento): Promise<void> {
-    this.sentActions.push(accion);
+    this.accionesEnviadas.push(accion);
   }
 }
 
@@ -56,157 +56,158 @@ describe('Parte 1 – núcleo', () => {
         .construir();
     } catch (error) {
       if (error instanceof Error && error.message.includes('TODO PARTE 2')) {
-        let isSilenced = false;
+        let estaSilenciado = false;
         vi.spyOn(IncidenteBuilder.prototype, 'paraConductor').mockReturnThis();
         vi.spyOn(IncidenteBuilder.prototype, 'deTipo').mockReturnThis();
         vi.spyOn(IncidenteBuilder.prototype, 'ocurridoEn').mockReturnThis();
         vi.spyOn(IncidenteBuilder.prototype, 'enUbicacion').mockReturnThis();
-        vi.spyOn(IncidenteBuilder.prototype, 'silenciado').mockImplementation(function (this: any, val: boolean) {
-          isSilenced = val;
+        vi.spyOn(IncidenteBuilder.prototype, 'silenciado').mockImplementation(function (this: any, valor: boolean) {
+          estaSilenciado = valor;
           return this;
         });
         vi.spyOn(IncidenteBuilder.prototype, 'construir').mockImplementation(() => ({
           conductorId: 'c-test',
           tipo: TipoEvento.MICROSUENO,
           ocurridoEn: new Date(),
-          silenciado: isSilenced,
+          silenciado: estaSilenciado,
           registrarRepeticion: vi.fn(),
           escalar: vi.fn(),
           atender: vi.fn(),
-          nivel: () => (isSilenced ? NivelRiesgo.NORMAL : NivelRiesgo.CRITICO),
+          nivel: () => (estaSilenciado ? NivelRiesgo.NORMAL : NivelRiesgo.CRITICO),
         } as unknown as Incidente));
       }
     }
   });
 
   it('ReglasEscalamiento escala cuando la alarma no fue silenciada', () => {
-    const rules = new ReglasEscalamiento(10, 3);
-    const incident = { silenciado: false } as Incidente;
-    expect(rules.debeEscalar(incident, 0)).toBe(true);
+    const reglas = new ReglasEscalamiento(10, 3);
+    const incidente = { silenciado: false } as Incidente;
+    expect(reglas.debeEscalar(incidente, 0)).toBe(true);
   });
 
   it('ReglasEscalamiento escala cuando se alcanza el umbral de repeticiones aunque se haya silenciado', () => {
-    const rules = new ReglasEscalamiento(10, 3);
-    const incident = { silenciado: true } as Incidente;
-    expect(rules.debeEscalar(incident, 2)).toBe(true);
-    expect(rules.debeEscalar(incident, 1)).toBe(false);
+    const reglas = new ReglasEscalamiento(10, 3);
+    const incidente = { silenciado: true } as Incidente;
+    expect(reglas.debeEscalar(incidente, 2)).toBe(true);
+    expect(reglas.debeEscalar(incidente, 1)).toBe(false);
   });
 
   it('FabricaPoliticas devuelve la política correcta para cada TipoPerfil', () => {
-    const factory = new FabricaPoliticas();
+    const fabrica = new FabricaPoliticas();
 
-    const soloPolicy = factory.crearPara({
+    const politicaSolo = fabrica.crearPara({
       conductorId: 'c-solo',
       tipoPerfil: TipoPerfil.PARTICULAR_SOLO,
       contactosEmergencia: ['+12345'],
     });
-    expect(soloPolicy).toBeInstanceOf(PoliticaParticularSolo);
+    expect(politicaSolo).toBeInstanceOf(PoliticaParticularSolo);
 
-    const copilotPolicy = factory.crearPara({
+    const politicaCopiloto = fabrica.crearPara({
       conductorId: 'c-copiloto',
       tipoPerfil: TipoPerfil.PARTICULAR_CON_COPILOTO,
       contactosEmergencia: [],
-      copilotoId: 'token-copilot',
+      copilotoId: 'token-copiloto',
     });
-    expect(copilotPolicy).toBeInstanceOf(PoliticaParticularConCopiloto);
+    expect(politicaCopiloto).toBeInstanceOf(PoliticaParticularConCopiloto);
 
-    const fleetPolicy = factory.crearPara({
+    const politicaFlota = fabrica.crearPara({
       conductorId: 'c-flota',
       tipoPerfil: TipoPerfil.FLOTA,
       contactosEmergencia: [],
-      flotaId: 'fleet-1',
+      flotaId: 'flota-1',
     });
-    expect(fleetPolicy).toBeInstanceOf(PoliticaFlota);
+    expect(politicaFlota).toBeInstanceOf(PoliticaFlota);
   });
 
   it('PoliticaParticularSolo genera un SMS por cada contacto de emergencia', () => {
-    const policy = new PoliticaParticularSolo();
-    const incident = {
+    const politica = new PoliticaParticularSolo();
+    const incidente = {
       tipo: TipoEvento.MICROSUENO,
       ubicacion: { latitud: 4.65, longitud: -74.06 },
     } as Incidente;
-    const context: ContextoConductor = {
+    const contexto: ContextoConductor = {
       conductorId: 'c-solo',
       tipoPerfil: TipoPerfil.PARTICULAR_SOLO,
       contactosEmergencia: ['+573001112233', '+573004445566'],
     };
 
-    const actions = policy.decidirAcciones(incident, context);
-    expect(actions).toHaveLength(2);
-    expect(actions[0]).toEqual({
+    const acciones = politica.decidirAcciones(incidente, contexto);
+    expect(acciones).toHaveLength(2);
+    expect(acciones[0]).toEqual({
       canal: Canal.SMS,
       destinatario: '+573001112233',
       mensaje: expect.stringContaining('MICROSUENO'),
     });
-    expect(actions[1].destinatario).toBe('+573004445566');
+    expect(acciones[1].destinatario).toBe('+573004445566');
   });
 
   it('ServicioEscalamiento envía cada acción por el notificador de su canal y guarda el incidente', async () => {
-    const profile: ContextoConductor = {
+    const perfil: ContextoConductor = {
       conductorId: 'c-solo',
       tipoPerfil: TipoPerfil.PARTICULAR_SOLO,
       contactosEmergencia: ['+573001112233'],
     };
-    const profiles = new ConsultorPerfilStub(new Map([[profile.conductorId, profile]]));
-    const repository = new RepositorioIncidentesSpy(0);
-    const smsNotifier = new NotificadorSpy();
-    const notifiers = new Map<Canal, Notificador>([[Canal.SMS, smsNotifier]]);
+    const perfiles = new ConsultorPerfilStub(new Map([[perfil.conductorId, perfil]]));
+    const repositorio = new RepositorioIncidentesSpy(0);
+    const notificadorSms = new NotificadorSpy();
+    const notificadores = new Map<Canal, Notificador>([[Canal.SMS, notificadorSms]]);
 
-    const service = new ServicioEscalamiento(
-      profiles,
-      repository,
+    const servicio = new ServicioEscalamiento(
+      perfiles,
+      repositorio,
       new ReglasEscalamiento(10, 3),
       new FabricaPoliticas(),
-      notifiers,
+      notificadores,
     );
 
-    const alert: AlertaFatiga = {
+    const alerta: AlertaFatiga = {
       conductorId: 'c-solo',
       tipo: TipoEvento.MICROSUENO,
       silenciada: false,
       ocurridaEn: new Date(),
     };
 
-    const result = await service.procesar(alert);
+    const resultado = await servicio.procesar(alerta);
 
-    expect(result.escalado).toBe(true);
-    expect(smsNotifier.sentActions).toHaveLength(1);
-    expect(smsNotifier.sentActions[0].destinatario).toBe('+573001112233');
-    expect(repository.saved).toHaveLength(1);
+    expect(resultado.escalado).toBe(true);
+    expect(notificadorSms.accionesEnviadas).toHaveLength(1);
+    expect(notificadorSms.accionesEnviadas[0].destinatario).toBe('+573001112233');
+    expect(repositorio.guardados).toHaveLength(1);
   });
 
   it('ServicioEscalamiento no notifica cuando la alerta fue silenciada y no hay repeticiones', async () => {
-    const profile: ContextoConductor = {
+    const perfil: ContextoConductor = {
       conductorId: 'c-solo',
       tipoPerfil: TipoPerfil.PARTICULAR_SOLO,
       contactosEmergencia: ['+573001112233'],
     };
-    const profiles = new ConsultorPerfilStub(new Map([[profile.conductorId, profile]]));
-    const repository = new RepositorioIncidentesSpy(0);
-    const smsNotifier = new NotificadorSpy();
-    const notifiers = new Map<Canal, Notificador>([[Canal.SMS, smsNotifier]]);
+    const perfiles = new ConsultorPerfilStub(new Map([[perfil.conductorId, perfil]]));
+    const repositorio = new RepositorioIncidentesSpy(0);
+    const notificadorSms = new NotificadorSpy();
+    const notificadores = new Map<Canal, Notificador>([[Canal.SMS, notificadorSms]]);
 
-    const service = new ServicioEscalamiento(
-      profiles,
-      repository,
+    const servicio = new ServicioEscalamiento(
+      perfiles,
+      repositorio,
       new ReglasEscalamiento(10, 3),
       new FabricaPoliticas(),
-      notifiers,
+      notificadores,
     );
 
-    const alert: AlertaFatiga = {
+    const alerta: AlertaFatiga = {
       conductorId: 'c-solo',
       tipo: TipoEvento.MICROSUENO,
       silenciada: true,
       ocurridaEn: new Date(),
     };
 
-    const result = await service.procesar(alert);
+    const resultado = await servicio.procesar(alerta);
 
-    expect(result.escalado).toBe(false);
-    expect(smsNotifier.sentActions).toHaveLength(0);
-    expect(result.acciones).toHaveLength(0);
-    expect(repository.saved).toHaveLength(1);
+    expect(resultado.escalado).toBe(false);
+    expect(notificadorSms.accionesEnviadas).toHaveLength(0);
+    expect(resultado.acciones).toHaveLength(0);
+    expect(repositorio.guardados).toHaveLength(1);
   });
 });
+
 

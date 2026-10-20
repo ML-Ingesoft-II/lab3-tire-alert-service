@@ -7,11 +7,12 @@ export class ReglasEscalamiento {
   ) {}
 
   /**
-   * Evaluates if escalation is required: when the alarm was not silenced,
-   * or when repeated occurrences reach the threshold within the configured time window.
+   * Evalúa si se debe escalar: cuando la alarma no fue silenciada en cabina,
+   * o cuando las repeticiones dentro de la ventana temporal alcanzan el umbral.
    */
   debeEscalar(incidente: Incidente, recientes: number): boolean {
     return !incidente.silenciado || recientes + 1 >= this.umbralRepeticiones;
   }
 }
+
 

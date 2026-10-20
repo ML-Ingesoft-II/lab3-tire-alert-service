@@ -14,8 +14,9 @@ export class FabricaPoliticas {
       case TipoPerfil.FLOTA:
         return new PoliticaFlota();
       default:
-        throw new Error(`Unsupported profile type: ${(contexto as ContextoConductor).tipoPerfil}`);
+        throw new Error(`Tipo de perfil no soportado: ${(contexto as ContextoConductor).tipoPerfil}`);
     }
   }
 }
+
 

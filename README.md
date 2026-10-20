@@ -87,7 +87,8 @@ docs/diagramas/               Diagramas del informe (PNG, SVG, PlantUML y draw.i
 Para guiar el desarrollo continuo del laboratorio, a continuación se desglosan las cuatro partes del proyecto, sus responsabilidades, reglas de negocio y lineamientos de implementación.
 
 > [!NOTE]
-> **Convenciones de código:** El código fuente (nombres de variables, mensajes de error, mensajes de notificación y comentarios concisos) se escribe en **inglés**. Las firmas públicas y nombres de interfaces definidos en la plantilla base no deben alterarse para mantener compatibilidad con los diagramas y el ensamble general.
+> **Convenciones de código:** El código fuente (nombres de variables, mensajes de error, mensajes de notificación y comentarios concisos) se escribe en **español** para mantener coherencia con el dominio y la documentación del proyecto. Las firmas públicas y nombres de interfaces definidos en la plantilla base no deben alterarse para mantener compatibilidad con los diagramas y el ensamble general.
+
 
 ---
 

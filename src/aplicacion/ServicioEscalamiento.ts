@@ -29,43 +29,44 @@ export class ServicioEscalamiento implements ProcesarAlerta {
 
     const incidente = builder.construir();
 
-    const cutoffDate = new Date(alerta.ocurridaEn.getTime() - this.reglas.ventanaMinutos * 60 * 1000);
-    const recentIncidentsCount = await this.repositorio.contarRecientes(alerta.conductorId, cutoffDate);
+    const fechaCorte = new Date(alerta.ocurridaEn.getTime() - this.reglas.ventanaMinutos * 60 * 1000);
+    const incidentesRecientes = await this.repositorio.contarRecientes(alerta.conductorId, fechaCorte);
 
-    if (recentIncidentsCount > 0) {
+    if (incidentesRecientes > 0) {
       incidente.registrarRepeticion();
     }
 
-    const shouldEscalate = this.reglas.debeEscalar(incidente, recentIncidentsCount);
-    let actions: AccionEscalamiento[] = [];
+    const debeEscalar = this.reglas.debeEscalar(incidente, incidentesRecientes);
+    let acciones: AccionEscalamiento[] = [];
 
     try {
-      if (shouldEscalate) {
-        const context = await this.perfiles.obtenerContexto(alerta.conductorId);
-        const policy = this.fabrica.crearPara(context);
-        actions = policy.decidirAcciones(incidente, context);
+      if (debeEscalar) {
+        const contexto = await this.perfiles.obtenerContexto(alerta.conductorId);
+        const politica = this.fabrica.crearPara(contexto);
+        acciones = politica.decidirAcciones(incidente, contexto);
 
-        // Transition incident state before sending to maintain critical state even on network failure
-        incidente.escalar(actions);
+        // Transición de estado a crítico antes de enviar para mantener consistencia ante fallos de red
+        incidente.escalar(acciones);
 
-        for (const action of actions) {
-          const notifier = this.notificadores.get(action.canal);
-          if (!notifier) {
-            throw new Error(`No notifier configured for channel: ${action.canal}`);
+        for (const accion of acciones) {
+          const notificador = this.notificadores.get(accion.canal);
+          if (!notificador) {
+            throw new Error(`No hay notificador configurado para el canal: ${accion.canal}`);
           }
-          await notifier.enviar(action);
+          await notificador.enviar(accion);
         }
       }
     } finally {
-      // Always persist the incident to satisfy auditability and traceability requirements (AC06)
+      // Registro inmutable obligatorio del incidente para auditoría y trazabilidad (AC06)
       await this.repositorio.guardar(incidente);
     }
 
     return {
-      escalado: shouldEscalate,
+      escalado: debeEscalar,
       nivel: incidente.nivel(),
-      acciones: actions,
+      acciones,
     };
   }
 }
+
 
