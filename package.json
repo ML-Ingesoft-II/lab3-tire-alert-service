@@ -1,0 +1,19 @@
+{
+  "name": "lab3-tire-alert-service",
+  "version": "0.1.0",
+  "description": "Lab 3 Ingeniería de Software II: tire_alert_service con arquitectura hexagonal, SOLID y patrones de diseño",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.1.12"
+  }
+}
