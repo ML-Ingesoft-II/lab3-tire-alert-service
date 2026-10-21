@@ -7,6 +7,10 @@ import type { Notificador } from './puertos/salida/Notificador';
 import type { FabricaPoliticas } from './FabricaPoliticas';
 import { IncidenteBuilder } from '../dominio/incidente/IncidenteBuilder';
 
+/**
+ * Caso de uso principal. PATRÓN STRATEGY: Context.
+ * Solo depende de interfaces (inversión de dependencias): todo se recibe por el constructor.
+ */
 export class ServicioEscalamiento implements ProcesarAlerta {
   constructor(
     private readonly perfiles: ConsultorPerfil,

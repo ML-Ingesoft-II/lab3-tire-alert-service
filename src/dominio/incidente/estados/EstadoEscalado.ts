@@ -4,7 +4,7 @@ import type { EstadoIncidente } from './EstadoIncidente';
 import { EstadoAtendido } from './EstadoAtendido';
 
 /**
- * PARTE 2 (incidente). PATRÓN STATE: estado concreto.
+ * PATRÓN STATE: estado concreto.
  * Nivel CRITICO. registrarRepeticion: no cambia de estado (solo se registra). escalar: agrega las nuevas acciones, sigue escalado. atender: pasa a EstadoAtendido.
  */
 export class EstadoEscalado implements EstadoIncidente {

@@ -2,6 +2,10 @@ import { Canal, type AccionEscalamiento, type ContextoConductor } from '../tipos
 import type { Incidente } from '../incidente/Incidente';
 import type { PoliticaEscalamiento } from './PoliticaEscalamiento';
 
+/**
+ * PATRÓN STRATEGY: estrategia concreta.
+ * Una acción Canal.DASHBOARD dirigida al despachador de la flota.
+ */
 export class PoliticaFlota implements PoliticaEscalamiento {
   decidirAcciones(incidente: Incidente, contexto: ContextoConductor): AccionEscalamiento[] {
     if (!contexto.flotaId || contexto.flotaId.trim() === '') {

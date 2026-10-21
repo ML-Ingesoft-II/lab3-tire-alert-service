@@ -2,7 +2,7 @@ import { TipoEvento, type AlertaFatiga } from '../../dominio/tipos';
 import type { ProcesarAlerta, ResultadoProceso } from '../../aplicacion/puertos/entrada/ProcesarAlerta';
 
 /**
- * PARTE 4 (entrada y cierre). Adaptador de entrada.
+ * Adaptador de entrada.
  * Recibe el JSON tal como llegaría desde tire_api_gateway, lo valida, lo convierte
  * en AlertaFatiga y lo entrega al puerto ProcesarAlerta.
  * JSON esperado: { conductorId, tipo: "MICROSUENO" | "CABECEO", silenciada, ocurridaEn (ISO), ubicacion? }

@@ -3,7 +3,7 @@ import type { EstadoIncidente } from './estados/EstadoIncidente';
 import { EstadoDetectado } from './estados/EstadoDetectado';
 
 /**
- * PARTE 2 (incidente). PATRÓN STATE: Context.
+ * PATRÓN STATE: Context.
  * Se crea con IncidenteBuilder y empieza en EstadoDetectado.
  * Delega registrarRepeticion / escalar / atender / nivel en su estado actual.
  */

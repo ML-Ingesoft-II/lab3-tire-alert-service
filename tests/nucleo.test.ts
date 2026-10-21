@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { Canal, NivelRiesgo, TipoEvento, TipoPerfil, type AccionEscalamiento, type AlertaFatiga, type ContextoConductor } from '../src/dominio/tipos';
+import { describe, expect, it } from 'vitest';
+import { Canal, TipoEvento, TipoPerfil, type AccionEscalamiento, type AlertaFatiga, type ContextoConductor } from '../src/dominio/tipos';
 import { ReglasEscalamiento } from '../src/dominio/ReglasEscalamiento';
 import { FabricaPoliticas } from '../src/aplicacion/FabricaPoliticas';
 import { PoliticaParticularSolo } from '../src/dominio/politicas/PoliticaParticularSolo';
@@ -9,7 +9,6 @@ import { ServicioEscalamiento } from '../src/aplicacion/ServicioEscalamiento';
 import type { ConsultorPerfil } from '../src/aplicacion/puertos/salida/ConsultorPerfil';
 import type { RepositorioIncidentes } from '../src/aplicacion/puertos/salida/RepositorioIncidentes';
 import type { Notificador } from '../src/aplicacion/puertos/salida/Notificador';
-import { IncidenteBuilder } from '../src/dominio/incidente/IncidenteBuilder';
 import type { Incidente } from '../src/dominio/incidente/Incidente';
 
 class ConsultorPerfilStub implements ConsultorPerfil {
@@ -47,38 +46,6 @@ class NotificadorSpy implements Notificador {
 }
 
 describe('Parte 1 – núcleo', () => {
-  beforeEach(() => {
-    try {
-      new IncidenteBuilder()
-        .paraConductor('c-check')
-        .deTipo(TipoEvento.MICROSUENO)
-        .ocurridoEn(new Date())
-        .construir();
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('TODO PARTE 2')) {
-        let estaSilenciado = false;
-        vi.spyOn(IncidenteBuilder.prototype, 'paraConductor').mockReturnThis();
-        vi.spyOn(IncidenteBuilder.prototype, 'deTipo').mockReturnThis();
-        vi.spyOn(IncidenteBuilder.prototype, 'ocurridoEn').mockReturnThis();
-        vi.spyOn(IncidenteBuilder.prototype, 'enUbicacion').mockReturnThis();
-        vi.spyOn(IncidenteBuilder.prototype, 'silenciado').mockImplementation(function (this: any, valor: boolean) {
-          estaSilenciado = valor;
-          return this;
-        });
-        vi.spyOn(IncidenteBuilder.prototype, 'construir').mockImplementation(() => ({
-          conductorId: 'c-test',
-          tipo: TipoEvento.MICROSUENO,
-          ocurridoEn: new Date(),
-          silenciado: estaSilenciado,
-          registrarRepeticion: vi.fn(),
-          escalar: vi.fn(),
-          atender: vi.fn(),
-          nivel: () => (estaSilenciado ? NivelRiesgo.NORMAL : NivelRiesgo.CRITICO),
-        } as unknown as Incidente));
-      }
-    }
-  });
-
   it('ReglasEscalamiento escala cuando la alarma no fue silenciada', () => {
     const reglas = new ReglasEscalamiento(10, 3);
     const incidente = { silenciado: false } as Incidente;

@@ -2,7 +2,7 @@ import type { TipoEvento, Ubicacion } from '../tipos';
 import { Incidente } from './Incidente';
 
 /**
- * PARTE 2 (incidente). PATRÓN BUILDER.
+ * PATRÓN BUILDER.
  * Uso: new IncidenteBuilder().paraConductor('c1').deTipo(TipoEvento.MICROSUENO)
  *        .ocurridoEn(new Date()).silenciado(false).construir();
  * construir() debe lanzar un Error si falta conductorId, tipo u ocurridoEn.

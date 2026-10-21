@@ -28,7 +28,7 @@ Incidente -right-> EstadoIncidente
 EstadoIncidente <|.. EstadoDetectado
 EstadoIncidente <|.. EstadoEscalado
 EstadoIncidente <|.. EstadoAtendido
-note bottom of EstadoDetectado : Nivel: precaución.\nPuede escalar.
-note bottom of EstadoEscalado : Nivel: crítico.\nSolo registra repeticiones.
-note bottom of EstadoAtendido : Nivel: normal.\nNo vuelve a notificar.
+note bottom of EstadoDetectado : Nivel: precaución.\nPasa a escalado al escalar.
+note bottom of EstadoEscalado : Nivel: crítico.\nAgrega nuevas acciones.
+note bottom of EstadoAtendido : Nivel: normal.\nIgnora nuevos escalamientos.
 @enduml

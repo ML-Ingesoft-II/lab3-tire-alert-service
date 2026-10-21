@@ -4,6 +4,11 @@ import { PoliticaParticularSolo } from '../dominio/politicas/PoliticaParticularS
 import { PoliticaParticularConCopiloto } from '../dominio/politicas/PoliticaParticularConCopiloto';
 import { PoliticaFlota } from '../dominio/politicas/PoliticaFlota';
 
+/**
+ * PATRÓN FACTORY METHOD: Creator.
+ * crearPara() elige la política según el perfil del conductor. Una subclase puede
+ * sobrescribirlo para un perfil nuevo (ver tests/abierto-cerrado.test.ts).
+ */
 export class FabricaPoliticas {
   crearPara(contexto: ContextoConductor): PoliticaEscalamiento {
     switch (contexto.tipoPerfil) {

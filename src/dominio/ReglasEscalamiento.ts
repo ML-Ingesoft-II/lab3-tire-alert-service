@@ -1,5 +1,8 @@
 import type { Incidente } from './incidente/Incidente';
 
+/**
+ * Decide CUÁNDO escalar. A quién avisar lo deciden las políticas (Strategy).
+ */
 export class ReglasEscalamiento {
   constructor(
     readonly ventanaMinutos: number = 10,
