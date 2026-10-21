@@ -10,7 +10,7 @@
 - Juan Camilo Vergara Tao - [juvergarat@unal.edu.co](mailto:juvergarat@unal.edu.co)
 
 > [!IMPORTANT]
-> El informe completo del laboratorio se encuentra disponible [aquí](URL).
+> El informe completo del laboratorio se encuentra disponible [aquí](docs/Lab_Patrones_Grupo04.pdf).
 
 Este repositorio contiene `tire_alert_service`, el componente del sistema **Tire** (detección de fatiga y microsueño en conductores) que se encarga de las alertas que la alarma de cabina no logró resolver. Según el perfil del conductor, decide a quién escalar cada alerta (RF08) y deja registrado el incidente (AC06).
 

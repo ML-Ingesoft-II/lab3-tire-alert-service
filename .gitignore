@@ -3,5 +3,3 @@ dist/
 coverage/
 .DS_Store
 *.log
-*.docx
-*.pdf
