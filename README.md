@@ -154,7 +154,7 @@ Para guiar el desarrollo continuo del laboratorio, a continuación se desglosan 
 ---
 
 ### Parte 3 – Adaptadores de Salida (`Adapter`, `Decorator`)
-**Estado:** ⏳ *Pendiente*
+**Estado:** ✅ *Completada*
 
 *Objetivo:* Implementar los puertos de salida conectando el núcleo con la infraestructura simulada y proveedores externos.
 
@@ -184,7 +184,7 @@ Para guiar el desarrollo continuo del laboratorio, a continuación se desglosan 
 ---
 
 ### Parte 4 – Adaptador de Entrada y Cierre (`Controlador REST`, `OCP`)
-**Estado:** ⏳ *Pendiente*
+**Estado:** ✅ *Completada*
 
 *Objetivo:* Exponer el puerto de entrada del servicio, validar cargas útiles del exterior y verificar la extensibilidad del diseño según el principio Abierto/Cerrado (Fase 7 del informe).
 
