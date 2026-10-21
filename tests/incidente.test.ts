@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { Canal, NivelRiesgo, TipoEvento, type AccionEscalamiento } from '../src/dominio/tipos';
 import { IncidenteBuilder } from '../src/dominio/incidente/IncidenteBuilder';
 
-// PARTE 2 (incidente): State (estados del incidente) y Builder.
-describe('Parte 2 – incidente', () => {
+// State (estados del incidente) y Builder.
+describe('Incidente', () => {
   it('IncidenteBuilder construye un incidente en estado Detectado con nivel PRECAUCION', () => {
     const fecha = new Date('2026-10-20T12:00:00Z');
     const incidente = new IncidenteBuilder()

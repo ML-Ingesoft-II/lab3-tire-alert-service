@@ -2,6 +2,10 @@ import { Canal, type AccionEscalamiento, type ContextoConductor } from '../tipos
 import type { Incidente } from '../incidente/Incidente';
 import type { PoliticaEscalamiento } from './PoliticaEscalamiento';
 
+/**
+ * PATRÓN STRATEGY: estrategia concreta.
+ * Una acción Canal.SMS por cada contacto de emergencia del conductor.
+ */
 export class PoliticaParticularSolo implements PoliticaEscalamiento {
   decidirAcciones(incidente: Incidente, contexto: ContextoConductor): AccionEscalamiento[] {
     if (!contexto.contactosEmergencia || contexto.contactosEmergencia.length === 0) {

@@ -5,7 +5,7 @@ import { EstadoAtendido } from './EstadoAtendido';
 import { EstadoEscalado } from './EstadoEscalado';
 
 /**
- * PARTE 2 (incidente). PATRÓN STATE: estado concreto.
+ * PATRÓN STATE: estado concreto.
  * Nivel PRECAUCION. registrarRepeticion: no cambia de estado. escalar: guarda las acciones (incidente.agregarAcciones) y pasa a EstadoEscalado. atender: pasa a EstadoAtendido.
  */
 export class EstadoDetectado implements EstadoIncidente {
