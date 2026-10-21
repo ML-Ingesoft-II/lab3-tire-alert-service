@@ -1,10 +1,15 @@
-import { describe, expect, it } from 'vitest';
-import { TipoEvento, TipoPerfil, type ContextoConductor } from '../src/dominio/tipos';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Canal, TipoEvento, TipoPerfil, type AccionEscalamiento, type ContextoConductor } from '../src/dominio/tipos';
 import { IncidenteBuilder } from '../src/dominio/incidente/IncidenteBuilder';
 import { RepositorioIncidentesEnMemoria } from '../src/adaptadores/salida/RepositorioIncidentesEnMemoria';
 import { ConsultorPerfilSimulado } from '../src/adaptadores/salida/ConsultorPerfilSimulado';
+import { ClienteFcmFalso } from '../src/adaptadores/salida/externos/ClienteFcmFalso';
+import { ProveedorSmsFalso } from '../src/adaptadores/salida/externos/ProveedorSmsFalso';
+import { NotificadorPushFcmSimulado } from '../src/adaptadores/salida/notificadores/NotificadorPushFcmSimulado';
+import { NotificadorSmsSimulado } from '../src/adaptadores/salida/notificadores/NotificadorSmsSimulado';
+import { NotificadorDashboardSimulado } from '../src/adaptadores/salida/notificadores/NotificadorDashboardSimulado';
 
-// PARTE 3 (adaptadores): Adapter (FCM, SMS), Decorator (reintento), repositorio y perfiles simulados.
+// Adapter (FCM, SMS), Decorator (reintento), repositorio y perfiles simulados.
 function incidente(conductorId: string, ocurridoEn: string) {
   return new IncidenteBuilder()
     .paraConductor(conductorId)
@@ -13,8 +18,47 @@ function incidente(conductorId: string, ocurridoEn: string) {
     .construir();
 }
 
-describe('Parte 3 – adaptadores', () => {
-  it.todo('NotificadorSmsSimulado traduce la acción a sendMessage(numero, texto)');
+function accion(canal: Canal, destinatario: string): AccionEscalamiento {
+  return { canal, destinatario, mensaje: 'Alerta de fatiga: MICROSUENO detectado' };
+}
+
+describe('Adaptadores de salida', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {}); // los clientes falsos imprimen por consola
+  });
+
+  it('NotificadorSmsSimulado traduce la acción a sendMessage(numero, texto)', async () => {
+    const proveedor = new ProveedorSmsFalso();
+    await new NotificadorSmsSimulado(proveedor).enviar(accion(Canal.SMS, '+573001112233'));
+
+    expect(proveedor.enviados).toEqual([
+      { numero: '+573001112233', texto: 'Alerta de fatiga: MICROSUENO detectado' },
+    ]);
+  });
+
+  it('NotificadorSmsSimulado lanza un error si el proveedor responde ok = false', async () => {
+    const proveedor = new ProveedorSmsFalso(1); // falla el primer envío
+    await expect(new NotificadorSmsSimulado(proveedor).enviar(accion(Canal.SMS, '+573001112233'))).rejects.toThrow();
+    expect(proveedor.enviados).toHaveLength(0);
+  });
+
+  it('NotificadorPushFcmSimulado traduce la acción a send(token, { title, body })', async () => {
+    const cliente = new ClienteFcmFalso();
+    await new NotificadorPushFcmSimulado(cliente).enviar(accion(Canal.PUSH, 'token-copiloto-01'));
+
+    expect(cliente.enviados).toHaveLength(1);
+    expect(cliente.enviados[0].token).toBe('token-copiloto-01');
+    expect(cliente.enviados[0].payload.body).toBe('Alerta de fatiga: MICROSUENO detectado');
+  });
+
+  it('NotificadorDashboardSimulado publica la acción para el despachador', async () => {
+    const dashboard = new NotificadorDashboardSimulado();
+    const publicada = accion(Canal.DASHBOARD, 'flota-transandina');
+    await dashboard.enviar(publicada);
+
+    expect(dashboard.publicadas).toEqual([publicada]);
+  });
+
   it.todo('NotificadorConReintento reintenta hasta lograr el envío cuando el proveedor falla temporalmente');
   it.todo('NotificadorConReintento relanza el error si fallan todos los intentos');
 

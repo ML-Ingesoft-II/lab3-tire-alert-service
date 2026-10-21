@@ -3,14 +3,15 @@ import type { Notificador } from '../../../aplicacion/puertos/salida/Notificador
 import type { ProveedorSmsFalso } from '../externos/ProveedorSmsFalso';
 
 /**
- * PARTE 3 (adaptadores).
- * PATRÓN ADAPTER: Adapter. Traduce la acción a proveedor.sendMessage(numero, texto). Si la respuesta trae ok=false, lanzar un Error.
+ * PATRÓN ADAPTER: Adapter. Traduce la acción a proveedor.sendMessage(numero, texto). Si la respuesta trae ok=false, lanza un Error.
  */
 export class NotificadorSmsSimulado implements Notificador {
-
   constructor(private readonly proveedor: ProveedorSmsFalso) {}
 
   async enviar(accion: AccionEscalamiento): Promise<void> {
-    throw new Error('TODO PARTE 3: NotificadorSmsSimulado.enviar');
+    const respuesta = await this.proveedor.sendMessage(accion.destinatario, accion.mensaje);
+    if (!respuesta.ok) {
+      throw new Error(`El proveedor de SMS no pudo enviar el mensaje a ${accion.destinatario}`);
+    }
   }
 }

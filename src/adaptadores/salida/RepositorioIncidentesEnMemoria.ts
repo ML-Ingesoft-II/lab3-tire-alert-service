@@ -2,7 +2,7 @@ import type { Incidente } from '../../dominio/incidente/Incidente';
 import type { RepositorioIncidentes } from '../../aplicacion/puertos/salida/RepositorioIncidentes';
 
 /**
- * PARTE 3 (adaptadores). Reemplaza a tire_alert_db: guarda los incidentes en un arreglo.
+ * Reemplaza a tire_alert_db: guarda los incidentes en un arreglo.
  * contarRecientes cuenta los del conductor con ocurridoEn >= desde (0 si no hay).
  */
 export class RepositorioIncidentesEnMemoria implements RepositorioIncidentes {
