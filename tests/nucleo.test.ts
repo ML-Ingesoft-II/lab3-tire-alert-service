@@ -45,7 +45,7 @@ class NotificadorSpy implements Notificador {
   }
 }
 
-describe('Núcleo', () => {
+describe('Parte 1 – núcleo', () => {
   it('ReglasEscalamiento escala cuando la alarma no fue silenciada', () => {
     const reglas = new ReglasEscalamiento(10, 3);
     const incidente = { silenciado: false } as Incidente;
