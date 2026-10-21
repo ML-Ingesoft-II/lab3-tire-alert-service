@@ -16,26 +16,43 @@ export class IncidenteBuilder {
   private esSilenciado = false;
 
   paraConductor(id: string): this {
-    throw new Error('TODO PARTE 2: IncidenteBuilder.paraConductor');
+    this.conductorId = id;
+    return this;
   }
 
   deTipo(tipo: TipoEvento): this {
-    throw new Error('TODO PARTE 2: IncidenteBuilder.deTipo');
+    this.tipo = tipo;
+    return this;
   }
 
   ocurridoEn(fecha: Date): this {
-    throw new Error('TODO PARTE 2: IncidenteBuilder.ocurridoEn');
+    this.fecha = fecha;
+    return this;
   }
 
   enUbicacion(ubicacion: Ubicacion): this {
-    throw new Error('TODO PARTE 2: IncidenteBuilder.enUbicacion');
+    this.ubicacion = ubicacion;
+    return this;
   }
 
   silenciado(valor: boolean): this {
-    throw new Error('TODO PARTE 2: IncidenteBuilder.silenciado');
+    this.esSilenciado = valor;
+    return this;
   }
 
   construir(): Incidente {
-    throw new Error('TODO PARTE 2: IncidenteBuilder.construir (validar obligatorios)');
+    if (!this.conductorId || !this.tipo || !this.fecha) {
+      throw new Error(
+        'Faltan datos obligatorios para construir el incidente: conductorId, tipo y fecha son requeridos',
+      );
+    }
+
+    return new Incidente(
+      this.conductorId,
+      this.tipo,
+      this.fecha,
+      this.esSilenciado,
+      this.ubicacion,
+    );
   }
 }

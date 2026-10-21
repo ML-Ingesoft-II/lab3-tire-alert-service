@@ -9,19 +9,19 @@ import type { EstadoIncidente } from './EstadoIncidente';
 export class EstadoAtendido implements EstadoIncidente {
   readonly nombre = 'Atendido';
 
-  registrarRepeticion(incidente: Incidente): void {
-    throw new Error('TODO PARTE 2: EstadoAtendido.registrarRepeticion');
+  registrarRepeticion(_incidente: Incidente): void {
+    // Estado terminal: no altera el incidente
   }
 
-  escalar(incidente: Incidente, acciones: AccionEscalamiento[]): void {
-    throw new Error('TODO PARTE 2: EstadoAtendido.escalar');
+  escalar(_incidente: Incidente, _acciones: AccionEscalamiento[]): void {
+    // Estado terminal: ignora nuevos intentos de escalamiento
   }
 
-  atender(incidente: Incidente): void {
-    throw new Error('TODO PARTE 2: EstadoAtendido.atender');
+  atender(_incidente: Incidente): void {
+    // Estado terminal: ya se encuentra atendido
   }
 
   nivel(): NivelRiesgo {
-    throw new Error('TODO PARTE 2: EstadoAtendido.nivel');
+    return NivelRiesgo.NORMAL;
   }
 }
