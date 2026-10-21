@@ -114,7 +114,7 @@ Para guiar el desarrollo continuo del laboratorio, a continuación se desglosan 
 ---
 
 ### Parte 2 – Incidente y Ciclo de Vida (`State`, `Builder`)
-**Estado:** ⏳ *Pendiente*
+**Estado:** ✅ *Completada*
 
 *Objetivo:* Modelar la entidad central del dominio, sus transiciones de estado de riesgo y su construcción segura.
 

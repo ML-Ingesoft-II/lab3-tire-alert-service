@@ -21,19 +21,19 @@ export class Incidente {
 
   // --- Operaciones que usa el servicio (delegan en el estado) ---
   registrarRepeticion(): void {
-    throw new Error('TODO PARTE 2: delegar en this.estado');
+    this.estado.registrarRepeticion(this);
   }
 
   escalar(acciones: AccionEscalamiento[]): void {
-    throw new Error('TODO PARTE 2: delegar en this.estado');
+    this.estado.escalar(this, acciones);
   }
 
   atender(): void {
-    throw new Error('TODO PARTE 2: delegar en this.estado');
+    this.estado.atender(this);
   }
 
   nivel(): NivelRiesgo {
-    throw new Error('TODO PARTE 2: delegar en this.estado');
+    return this.estado.nivel();
   }
 
   // --- Operaciones que usan los estados ---

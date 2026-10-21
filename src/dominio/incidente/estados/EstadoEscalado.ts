@@ -1,6 +1,7 @@
 import { NivelRiesgo, type AccionEscalamiento } from '../../tipos';
 import type { Incidente } from '../Incidente';
 import type { EstadoIncidente } from './EstadoIncidente';
+import { EstadoAtendido } from './EstadoAtendido';
 
 /**
  * PARTE 2 (incidente). PATRÓN STATE: estado concreto.
@@ -9,19 +10,19 @@ import type { EstadoIncidente } from './EstadoIncidente';
 export class EstadoEscalado implements EstadoIncidente {
   readonly nombre = 'Escalado';
 
-  registrarRepeticion(incidente: Incidente): void {
-    throw new Error('TODO PARTE 2: EstadoEscalado.registrarRepeticion');
+  registrarRepeticion(_incidente: Incidente): void {
+    // Permanece en EstadoEscalado
   }
 
   escalar(incidente: Incidente, acciones: AccionEscalamiento[]): void {
-    throw new Error('TODO PARTE 2: EstadoEscalado.escalar');
+    incidente.agregarAcciones(acciones);
   }
 
   atender(incidente: Incidente): void {
-    throw new Error('TODO PARTE 2: EstadoEscalado.atender');
+    incidente.cambiarEstado(new EstadoAtendido());
   }
 
   nivel(): NivelRiesgo {
-    throw new Error('TODO PARTE 2: EstadoEscalado.nivel');
+    return NivelRiesgo.CRITICO;
   }
 }
