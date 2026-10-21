@@ -71,16 +71,16 @@ docs/diagramas/               Diagramas del informe (PNG, SVG, PlantUML y draw.i
 
 | Diagrama | Archivo |
 |---|---|
-| Arquitectura macro (fase 2) | [`docs/diagramas/fase2-arquitectura-macro.drawio`](docs/diagramas/fase2-arquitectura-macro.drawio) |
-| Sub-arquitectura hexagonal (fase 3) | [`docs/diagramas/fase3-sub-arquitectura.drawio`](docs/diagramas/fase3-sub-arquitectura.drawio) |
-| Diagrama de clases base (fase 4) | [`docs/diagramas/fase4-clases-base.png`](docs/diagramas/fase4-clases-base.png) |
-| Diagrama de clases con patrones (fase 5) | [`docs/diagramas/fase5-clases-patrones.png`](docs/diagramas/fase5-clases-patrones.png) |
-| Strategy | [`docs/diagramas/fase5-strategy.png`](docs/diagramas/fase5-strategy.png) |
-| Factory Method | [`docs/diagramas/fase5-factory-method.png`](docs/diagramas/fase5-factory-method.png) |
-| State | [`docs/diagramas/fase5-state.png`](docs/diagramas/fase5-state.png) |
-| Builder | [`docs/diagramas/fase5-builder.png`](docs/diagramas/fase5-builder.png) |
-| Adapter | [`docs/diagramas/fase5-adapter.png`](docs/diagramas/fase5-adapter.png) |
-| Decorator | [`docs/diagramas/fase5-decorator.png`](docs/diagramas/fase5-decorator.png) |
+| Arquitectura macro (fase 2) | [`docs/diagramas/fase2-arquitectura-macro.svg`](docs/diagramas/fase2-arquitectura-macro.svg) |
+| Sub-arquitectura hexagonal (fase 3) | [`docs/diagramas/fase3-sub-arquitectura.svg`](docs/diagramas/fase3-sub-arquitectura.svg) |
+| Diagrama de clases base (fase 4) | [`docs/diagramas/fase4-clases-base.svg`](docs/diagramas/fase4-clases-base.svg) |
+| Diagrama de clases con patrones (fase 5) | [`docs/diagramas/fase5-clases-patrones.svg`](docs/diagramas/fase5-clases-patrones.svg) |
+| Strategy | [`docs/diagramas/fase5-strategy.svg`](docs/diagramas/fase5-strategy.svg) |
+| Factory Method | [`docs/diagramas/fase5-factory-method.svg`](docs/diagramas/fase5-factory-method.svg) |
+| State | [`docs/diagramas/fase5-state.svg`](docs/diagramas/fase5-state.svg) |
+| Builder | [`docs/diagramas/fase5-builder.svg`](docs/diagramas/fase5-builder.svg) |
+| Adapter | [`docs/diagramas/fase5-adapter.svg`](docs/diagramas/fase5-adapter.svg) |
+| Decorator | [`docs/diagramas/fase5-decorator.svg`](docs/diagramas/fase5-decorator.svg) |
 
 ## Plan detallado de desarrollo por fases
 
