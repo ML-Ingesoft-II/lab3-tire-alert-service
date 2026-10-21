@@ -8,6 +8,8 @@ import { ProveedorSmsFalso } from '../src/adaptadores/salida/externos/ProveedorS
 import { NotificadorPushFcmSimulado } from '../src/adaptadores/salida/notificadores/NotificadorPushFcmSimulado';
 import { NotificadorSmsSimulado } from '../src/adaptadores/salida/notificadores/NotificadorSmsSimulado';
 import { NotificadorDashboardSimulado } from '../src/adaptadores/salida/notificadores/NotificadorDashboardSimulado';
+import { NotificadorConReintento } from '../src/adaptadores/salida/notificadores/NotificadorConReintento';
+import type { Notificador } from '../src/aplicacion/puertos/salida/Notificador';
 
 // Adapter (FCM, SMS), Decorator (reintento), repositorio y perfiles simulados.
 function incidente(conductorId: string, ocurridoEn: string) {
@@ -59,8 +61,27 @@ describe('Adaptadores de salida', () => {
     expect(dashboard.publicadas).toEqual([publicada]);
   });
 
-  it.todo('NotificadorConReintento reintenta hasta lograr el envío cuando el proveedor falla temporalmente');
-  it.todo('NotificadorConReintento relanza el error si fallan todos los intentos');
+  it('NotificadorConReintento reintenta hasta lograr el envío cuando el proveedor falla temporalmente', async () => {
+    const proveedor = new ProveedorSmsFalso(2); // falla los 2 primeros intentos
+    const notificador = new NotificadorConReintento(new NotificadorSmsSimulado(proveedor), 3);
+
+    await notificador.enviar(accion(Canal.SMS, '+573001112233'));
+
+    expect(proveedor.enviados).toHaveLength(1);
+  });
+
+  it('NotificadorConReintento relanza el error si fallan todos los intentos', async () => {
+    let llamadas = 0;
+    const siempreFalla: Notificador = {
+      async enviar() {
+        llamadas++;
+        throw new Error(`fallo ${llamadas}`);
+      },
+    };
+
+    await expect(new NotificadorConReintento(siempreFalla, 3).enviar(accion(Canal.PUSH, 'token'))).rejects.toThrow('fallo 3');
+    expect(llamadas).toBe(3);
+  });
 
   it('RepositorioIncidentesEnMemoria cuenta solo los incidentes del conductor dentro de la ventana', async () => {
     const repositorio = new RepositorioIncidentesEnMemoria();

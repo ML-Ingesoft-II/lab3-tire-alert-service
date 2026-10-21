@@ -13,6 +13,15 @@ export class NotificadorConReintento implements Notificador {
   ) {}
 
   async enviar(accion: AccionEscalamiento): Promise<void> {
-    throw new Error('TODO PARTE 3: NotificadorConReintento.enviar');
+    let ultimoError: unknown;
+    for (let intento = 1; intento <= Math.max(1, this.intentos); intento++) {
+      try {
+        await this.envuelto.enviar(accion);
+        return;
+      } catch (error) {
+        ultimoError = error;
+      }
+    }
+    throw ultimoError;
   }
 }
