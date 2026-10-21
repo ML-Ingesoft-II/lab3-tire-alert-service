@@ -9,6 +9,10 @@ export class ConsultorPerfilSimulado implements ConsultorPerfil {
   constructor(private readonly perfiles: Map<string, ContextoConductor>) {}
 
   async obtenerContexto(conductorId: string): Promise<ContextoConductor> {
-    throw new Error('TODO PARTE 3: ConsultorPerfilSimulado.obtenerContexto');
+    const perfil = this.perfiles.get(conductorId);
+    if (!perfil) {
+      throw new Error(`No existe un perfil para el conductor ${conductorId}`);
+    }
+    return perfil;
   }
 }

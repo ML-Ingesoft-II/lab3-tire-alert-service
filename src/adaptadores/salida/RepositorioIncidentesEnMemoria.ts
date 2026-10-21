@@ -9,11 +9,13 @@ export class RepositorioIncidentesEnMemoria implements RepositorioIncidentes {
   private readonly incidentes: Incidente[] = [];
 
   async guardar(incidente: Incidente): Promise<void> {
-    throw new Error('TODO PARTE 3: RepositorioIncidentesEnMemoria.guardar');
+    this.incidentes.push(incidente);
   }
 
   async contarRecientes(conductorId: string, desde: Date): Promise<number> {
-    throw new Error('TODO PARTE 3: RepositorioIncidentesEnMemoria.contarRecientes');
+    return this.incidentes.filter(
+      (incidente) => incidente.conductorId === conductorId && incidente.ocurridoEn >= desde,
+    ).length;
   }
 
   todos(): readonly Incidente[] {
